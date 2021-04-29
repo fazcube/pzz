@@ -16,10 +16,10 @@
         <shiro:hasAnyRoles name="merchant,admin">
             <li><a href="javascript:;">用户管理</a>
                 <ul>
-                    <li>增</li>
-                    <li>删</li>
-                    <li>查</li>
-                    <li>改</li>
+                    <li><a href="javascript:;">增加用户</a></li>
+                    <li><a href="javascript:;">删除用户</a></li>
+                    <li><a href="javascript:;">查找用户</a></li>
+                    <li><a href="javascript:;">修改用户</a></li>
                 </ul>
             </li>
             <li><a href="javascript:;">商品管理</a></li>

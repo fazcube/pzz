@@ -2,6 +2,7 @@ package com.faz.springbootshiro.config.shiro;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.faz.springbootshiro.config.jwt.JwtToken;
 import com.faz.springbootshiro.entity.SysPermission;
 import com.faz.springbootshiro.entity.SysRole;
 import com.faz.springbootshiro.entity.SysUser;
@@ -27,7 +28,7 @@ import java.util.List;
  * @desc    自定义realm
  **/
 @Slf4j
-public class MyRealm extends AuthorizingRealm {
+public class ShiroRealm extends AuthorizingRealm {
 
     @Autowired
     private SysUserService sysUserService;
@@ -37,6 +38,17 @@ public class MyRealm extends AuthorizingRealm {
 
     @Autowired
     private SysRolePermissionService sysRolePermissionService;
+
+    /**
+     * 必须重写supports方法
+     * @param token
+     * @return
+     */
+    @Override
+    public boolean supports(AuthenticationToken token) {
+        return token instanceof JwtToken;
+    }
+
     /**
      * 授权
      * @param principalCollection

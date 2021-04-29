@@ -1,5 +1,6 @@
 package com.faz.springbootshiro.config.shiro;
 
+import com.faz.springbootshiro.config.jwt.JwtFilter;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
@@ -14,6 +15,7 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.Filter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,12 +29,12 @@ import java.util.Map;
 public class ShiroConfig {
 
     //1、创建shiroFilter
-    @Bean
-    public ShiroFilterFactoryBean getShiroFilterFactoryBean(DefaultWebSecurityManager defaultWebSecurityManager){
+    @Bean("shiroFilter")
+    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager){
         //负责拦截所有请求的类
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         //给filter设置安全管理器
-        shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
+        shiroFilterFactoryBean.setSecurityManager(securityManager);
         //自定义未授权返回页面
         shiroFilterFactoryBean.setLoginUrl("/login.jsp");
         //配置系统的受限资源和公开资源
@@ -44,22 +46,29 @@ public class ShiroConfig {
         //所有的页面都需要认证
         map.put("/**","authc");
 
+        //加载自定义的jwtFilter
+        Map<String, Filter> filterMap = new HashMap<String,Filter>(1);
+        filterMap.put("jwt",new JwtFilter());
+        shiroFilterFactoryBean.setFilters(filterMap);
+
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
 
         return shiroFilterFactoryBean;
     }
     //2、创建安全管理器
-    @Bean
-    public DefaultWebSecurityManager getDefaultWebSecurityManager(Realm realm){
+    @Bean("securityManager")
+    public DefaultWebSecurityManager securityManager(Realm realm){
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
         //给安全管理器设置realm
         defaultWebSecurityManager.setRealm(realm);
 
+        //关闭session
         DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
         DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();
         defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
         subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
         defaultWebSecurityManager.setSubjectDAO(subjectDAO);
+
         //自定义缓存实现,使用redis
         defaultWebSecurityManager.setCacheManager(redisCacheManager());
 
@@ -67,16 +76,16 @@ public class ShiroConfig {
     }
 
     //3、创建自定义realm
-    @Bean
-    public Realm getRealm(){
-        MyRealm myRealm = new MyRealm();
+    @Bean("realm")
+    public Realm realm(){
+        ShiroRealm shiroRealm = new ShiroRealm();
         //告诉realm使用的是md5认证并且循环16次
         HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
         credentialsMatcher.setHashAlgorithmName("MD5");
         credentialsMatcher.setHashIterations(16);
-        myRealm.setCredentialsMatcher(credentialsMatcher);
+        shiroRealm.setCredentialsMatcher(credentialsMatcher);
 
-        return myRealm;
+        return shiroRealm;
     }
 
     //----------------
@@ -86,6 +95,7 @@ public class ShiroConfig {
      * 使用shrio-redis插件
      * @return
      */
+    @Bean("redisCacheManager")
     public RedisCacheManager redisCacheManager(){
         RedisCacheManager redisCacheManager = new RedisCacheManager();
         redisCacheManager.setRedisManager(redisManager());
@@ -97,7 +107,7 @@ public class ShiroConfig {
         return redisCacheManager;
     }
 
-    @Bean
+    @Bean("redisManager")
     public RedisManager redisManager() {
         // redis 单机支持，在集群为空，或者集群无机器时候使用 add by jzyadmin@163.com
         RedisManager redisManager = new RedisManager();
