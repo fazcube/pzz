@@ -2,6 +2,12 @@ package com.faz.springbootshiro.utils;
 
 import cn.hutool.core.util.RandomUtil;
 
+/**
+ * @author  PZJ
+ * @create  2021/4/24 22:02
+ * @email   wuchzh0@gmail.com
+ * @desc    生成各种字符串
+ **/
 public class Generate {
 
     final public static String SALT = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()_+<>?:";

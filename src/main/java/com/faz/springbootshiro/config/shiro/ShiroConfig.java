@@ -12,8 +12,10 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
@@ -28,41 +30,63 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
-    //1、创建shiroFilter
+    @Value("${spring.redis.host}")
+    private String host;
+
+    @Value("${spring.redis.port}")
+    private int port;
+
+    public static final int USER_INFO_TIME = 3600;
+
+    /**
+     * 创建shiroFilter
+     * @param securityManager
+     * @return
+     */
     @Bean("shiroFilter")
     public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager){
         //负责拦截所有请求的类
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         //给filter设置安全管理器
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        //自定义未授权返回页面
+        //自定义未授权返回页面 不一定要设置为登陆页面 可以设置为无权限等页面
         shiroFilterFactoryBean.setLoginUrl("/login.jsp");
+        shiroFilterFactoryBean.setUnauthorizedUrl("/403.html");
+
         //配置系统的受限资源和公开资源
         Map<String,String> map = new HashMap<>();
 
-        //map.put("/*.jsp","anon");
+        map.put("/login.jsp","anon");
+        map.put("/reg.jsp","anon");
+
         map.put("/user/login","anon");
         map.put("/user/register","anon");
-        //所有的页面都需要认证
-        map.put("/**","authc");
 
-        //加载自定义的jwtFilter
+        //创建 加载自定义的 jwtFilter 并取名为 jwt
         Map<String, Filter> filterMap = new HashMap<String,Filter>(1);
         filterMap.put("jwt",new JwtFilter());
         shiroFilterFactoryBean.setFilters(filterMap);
+
+        //所有的资源都需要通过自定义的jwt过滤器认证 自上而下的执行顺序
+        map.put("/**","jwt");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
 
         return shiroFilterFactoryBean;
     }
-    //2、创建安全管理器
+
+    /**
+     * 创建安全管理器
+     * @param realm
+     * @return
+     */
     @Bean("securityManager")
-    public DefaultWebSecurityManager securityManager(Realm realm){
+    public DefaultWebSecurityManager securityManager(ShiroRealm realm){
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
         //给安全管理器设置realm
         defaultWebSecurityManager.setRealm(realm);
 
-        //关闭session
+        //关闭session 不保存用户的登陆状态，保证每次用户操作都要经过filter
         DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
         DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();
         defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
@@ -75,20 +99,7 @@ public class ShiroConfig {
         return defaultWebSecurityManager;
     }
 
-    //3、创建自定义realm
-    @Bean("realm")
-    public Realm realm(){
-        ShiroRealm shiroRealm = new ShiroRealm();
-        //告诉realm使用的是md5认证并且循环16次
-        HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
-        credentialsMatcher.setHashAlgorithmName("MD5");
-        credentialsMatcher.setHashIterations(16);
-        shiroRealm.setCredentialsMatcher(credentialsMatcher);
-
-        return shiroRealm;
-    }
-
-    //----------------
+    //--------------------------------------------------------------------------------
 
     /**
      * cacheManager 缓存 使用redis实现
@@ -99,11 +110,10 @@ public class ShiroConfig {
     public RedisCacheManager redisCacheManager(){
         RedisCacheManager redisCacheManager = new RedisCacheManager();
         redisCacheManager.setRedisManager(redisManager());
-
         //redis中针对不同用户缓存(此处的id需要对应user实体中的id字段,用于唯一标识)
         redisCacheManager.setPrincipalIdFieldName("id");
         //用户权限信息缓存时间 秒
-        redisCacheManager.setExpire(1800);
+        redisCacheManager.setExpire(USER_INFO_TIME);
         return redisCacheManager;
     }
 
@@ -111,8 +121,8 @@ public class ShiroConfig {
     public RedisManager redisManager() {
         // redis 单机支持，在集群为空，或者集群无机器时候使用 add by jzyadmin@163.com
         RedisManager redisManager = new RedisManager();
-        redisManager.setHost("localhost");
-        redisManager.setPort(6379);
+        redisManager.setHost(host);
+        redisManager.setPort(port);
         redisManager.setTimeout(0);
         return redisManager;
     }
@@ -121,38 +131,41 @@ public class ShiroConfig {
      * 下面的代码是添加注解支持
      * @return
      */
+//    @Bean
+//    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+//        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+//        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
+//        /**
+//         * 解决重复代理问题 github#994
+//         * 添加前缀判断 不匹配 任何Advisor
+//         */
+//        defaultAdvisorAutoProxyCreator.setUsePrefix(true);
+//        defaultAdvisorAutoProxyCreator.setAdvisorBeanNamePrefix("_no_advisor");
+//        return defaultAdvisorAutoProxyCreator;
+//    }
+
+    /**
+     * 下面的代码是添加注解支持
+     * @return
+     */
     @Bean
+    @DependsOn("lifecycleBeanPostProcessor")
     public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
         DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
         defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
-        /**
-         * 解决重复代理问题 github#994
-         * 添加前缀判断 不匹配 任何Advisor
-         */
-        defaultAdvisorAutoProxyCreator.setUsePrefix(true);
-        defaultAdvisorAutoProxyCreator.setAdvisorBeanNamePrefix("_no_advisor");
         return defaultAdvisorAutoProxyCreator;
     }
 
-    /**
-     * 使授权注解起作用
-     * @param securityManager
-     * @return
-     */
+    @Bean
+    public static LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+        return new LifecycleBeanPostProcessor();
+    }
+
     @Bean
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(DefaultWebSecurityManager securityManager) {
         AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
         advisor.setSecurityManager(securityManager);
         return advisor;
-    }
-
-    /**
-     * Shiro生命周期处理器
-     *
-     */
-    @Bean
-    public LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
-        return new LifecycleBeanPostProcessor();
     }
 
 }

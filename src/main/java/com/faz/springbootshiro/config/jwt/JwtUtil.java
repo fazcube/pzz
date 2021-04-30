@@ -1,4 +1,4 @@
-package com.faz.springbootshiro.utils;
+package com.faz.springbootshiro.config.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -21,8 +21,9 @@ import org.apache.shiro.SecurityUtils;
 public class JwtUtil {
 
 	// Token过期时间30分钟（用户登录过期时间是此时间的两倍，以token在reids缓存时间为准）
-	//2020.10.27修改为6小时
-	public static final long EXPIRE_TIME = 3600 * 60 * 1000;
+	public static final long EXPIRE_TIME = 3600 * 1 * 1000;
+
+	public static final String PREFIX_USER_TOKEN = "Faz_token_";
 
 	/**
 	 * 校验token是否正确
