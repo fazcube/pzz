@@ -11,7 +11,6 @@ import com.faz.springbootshiro.service.SysRolePermissionService;
 import com.faz.springbootshiro.service.SysUserRoleService;
 import com.faz.springbootshiro.service.SysUserService;
 import com.faz.springbootshiro.config.jwt.JwtUtil;
-import com.faz.springbootshiro.utils.MyByteSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
