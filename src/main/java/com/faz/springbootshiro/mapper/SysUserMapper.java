@@ -1,7 +1,7 @@
-package com.faz.springbootshiro.dao;
+package com.faz.springbootshiro.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.faz.springbootshiro.entity.SysUser;
 
-public interface SysUserDao extends BaseMapper<SysUser> {
+public interface SysUserMapper extends BaseMapper<SysUser> {
 }

@@ -1,6 +1,6 @@
 package com.faz.springbootshiro.common.exception;
 
-import com.faz.springbootshiro.entity.Result;
+import com.faz.springbootshiro.common.vo.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;

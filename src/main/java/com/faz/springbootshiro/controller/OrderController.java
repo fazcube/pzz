@@ -1,11 +1,10 @@
 package com.faz.springbootshiro.controller;
 
-import com.faz.springbootshiro.entity.Result;
+import com.faz.springbootshiro.common.vo.Result;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

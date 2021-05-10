@@ -1,4 +1,4 @@
-package com.faz.springbootshiro.entity;
+package com.faz.springbootshiro.common.vo;
 
 import java.io.Serializable;
 

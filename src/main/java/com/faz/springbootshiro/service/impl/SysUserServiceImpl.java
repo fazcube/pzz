@@ -2,22 +2,20 @@ package com.faz.springbootshiro.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.faz.springbootshiro.dao.SysUserDao;
+import com.faz.springbootshiro.mapper.SysUserMapper;
 import com.faz.springbootshiro.entity.SysUser;
 import com.faz.springbootshiro.service.SysUserService;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
 @Service
-public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> implements SysUserService {
+public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
     @Resource
-    private SysUserDao sysUserDao;
+    private SysUserMapper sysUserDao;
 
     /**
      * 用户注册

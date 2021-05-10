@@ -1,16 +1,19 @@
 package com.faz.springbootshiro.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.faz.springbootshiro.config.redis.RedisUtil;
-import com.faz.springbootshiro.entity.Result;
+import com.faz.springbootshiro.common.vo.Result;
 import com.faz.springbootshiro.entity.SysUser;
 import com.faz.springbootshiro.service.SysUserService;
 import com.faz.springbootshiro.config.jwt.JwtUtil;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,5 +78,24 @@ public class SysUserController {
             return "redirect:/login.jsp";
         }
         return "redirect:/reg.jsp";
+    }
+
+    @GetMapping(value = "/list")
+    public Result<?> list(SysUser sysUser,
+                          @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                          @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                          HttpServletRequest req){
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        Page<SysUser> page = new Page<>(pageNo, pageSize);
+        IPage<SysUser> pageList = sysUserService.page(page,queryWrapper);
+        return Result.OK(pageList);
+    }
+
+    @PostMapping(value = "/add")
+    public Result<?> add(@RequestBody SysUser sysUser){
+        if(sysUserService.save(sysUser)){
+            return Result.OK("添加成功！");
+        }
+        return Result.error("添加失败！");
     }
 }

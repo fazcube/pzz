@@ -3,9 +3,9 @@ package com.faz.springbootshiro.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.faz.springbootshiro.dao.SysRoleDao;
-import com.faz.springbootshiro.dao.SysUserDao;
-import com.faz.springbootshiro.dao.SysUserRoleDao;
+import com.faz.springbootshiro.mapper.SysRoleMapper;
+import com.faz.springbootshiro.mapper.SysUserMapper;
+import com.faz.springbootshiro.mapper.SysUserRoleMapper;
 import com.faz.springbootshiro.entity.SysRole;
 import com.faz.springbootshiro.entity.SysUser;
 import com.faz.springbootshiro.entity.SysUserRole;
@@ -17,14 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleDao,SysUserRole> implements SysUserRoleService {
+public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper,SysUserRole> implements SysUserRoleService {
 
     @Resource
-    private SysUserDao sysUserDao;
+    private SysUserMapper sysUserDao;
     @Resource
-    private SysUserRoleDao sysUserRoleDao;
+    private SysUserRoleMapper sysUserRoleDao;
     @Resource
-    private SysRoleDao sysRoleDao;
+    private SysRoleMapper sysRoleDao;
 
     /**
      * 根据用户名获取角色名
