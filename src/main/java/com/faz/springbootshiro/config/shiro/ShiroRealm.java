@@ -122,6 +122,8 @@ public class ShiroRealm extends AuthorizingRealm {
         if (user == null) {
             throw new AuthenticationException("用户不存在!");
         }
+        //校验用户状态 0正常 1冻结
+
         // 校验token是否超时失效  & 或者账号密码是否错误
         if (!jwtTokenRefresh(token, username, user.getPassword())) {
             throw new AuthenticationException("Token失效，请重新登录!");

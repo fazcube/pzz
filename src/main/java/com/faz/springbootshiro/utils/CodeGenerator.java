@@ -27,15 +27,16 @@ import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
  **/
 
 public class CodeGenerator {
+
     /**
-     * <p>
      * 读取控制台内容
-     * </p>
+     * @param tip
+     * @return
      */
     public static String scanner(String tip) {
         Scanner scanner = new Scanner(System.in);
         StringBuilder help = new StringBuilder();
-        help.append("请输入" + tip + "：");
+        help.append("please input " + tip + ":");
         System.out.println(help.toString());
         if (scanner.hasNext()) {
             String ipt = scanner.next();
@@ -43,7 +44,7 @@ public class CodeGenerator {
                 return ipt;
             }
         }
-        throw new MybatisPlusException("请输入正确的" + tip + "！");
+        throw new MybatisPlusException("Please enter the correct" + tip + "!");
     }
 
     /**
@@ -56,10 +57,17 @@ public class CodeGenerator {
         // 全局配置
         GlobalConfig gc = new GlobalConfig();
         String projectPath = System.getProperty("user.dir");
-        System.out.println("user.dir的路径为："+projectPath);
         gc.setOutputDir(projectPath + "/src/main/java");
         gc.setAuthor("Fazcube");
         gc.setOpen(false);
+
+        // 自定义文件命名，注意 %s 会自动填充表实体属性！
+        gc.setMapperName("%sMapper");
+        gc.setXmlName("%sMapper");
+        gc.setServiceName("%sService");
+        gc.setServiceImplName("%sServiceImpl");
+        gc.setControllerName("%sController");
+
         mpg.setGlobalConfig(gc);
 
         // 数据源配置
@@ -73,7 +81,7 @@ public class CodeGenerator {
 
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setModuleName(scanner("模块名"));
+        pc.setModuleName(scanner("module name"));
         pc.setParent("com.faz");
         mpg.setPackageInfo(pc);
 
@@ -100,25 +108,35 @@ public class CodeGenerator {
         // 策略配置
         StrategyConfig strategy = new StrategyConfig();
         strategy.setNaming(NamingStrategy.underline_to_camel);
-        // 字段驼峰命名
-        strategy.setColumnNaming(NamingStrategy.underline_to_camel);
-        //
-        //strategy.setSuperEntityClass("com.baomidou.mybatisplus.samples.generator.common.BaseEntity");
-        // 设置实体类是否使用lombok
-        strategy.setEntityLombokModel(true);
-        // 公共父类
-        //strategy.setSuperControllerClass("com.baomidou.mybatisplus.samples.generator.common.BaseController");
-        // 输入数据库中的表名
-        strategy.setInclude(scanner("表名"));
-        //公共实体类字段
-        //strategy.setSuperEntityColumns("id");
+        strategy.setColumnNaming(NamingStrategy.underline_to_camel);// 字段驼峰命名
+        strategy.setEntityLombokModel(true);// 设置实体类是否使用lombok
 
-        // 驼峰生成方法
-        strategy.setControllerMappingHyphenStyle(true);
+        strategy.setInclude(scanner("table name"));// 输入数据库中的表名，需要生成的表名
+        //strategy.setSuperEntityColumns("id");//公共实体类字段
+        //strategy.setSuperEntityClass("com.baomidou.mybatisplus.samples.generator.common.BaseEntity");
+        //strategy.setSuperControllerClass("com.baomidou.mybatisplus.samples.generator.common.BaseController");// 公共父类
+
+        strategy.setRestControllerStyle(true); //控制层：true——生成@RsetController false——生成@Controller
+        //strategy.setEntityTableFieldAnnotationEnable(true);// 表字段注释启动
+        strategy.setControllerMappingHyphenStyle(true);// 驼峰生成方法
         strategy.setTablePrefix(pc.getModuleName() + "_");
         mpg.setStrategy(strategy);
-        // 选择 freemarker 引擎需要指定如下加，注意 pom 依赖必须有！
-        //mpg.setTemplateEngine(new FreemarkerTemplateEngine());
+
+
+        //模板生成器 选择 freemarker 引擎需要指定如下加，注意 pom 依赖必须有！
+        mpg.setTemplateEngine(new FreemarkerTemplateEngine());
+
+        TemplateConfig tc = new TemplateConfig();
+        tc.setController("/fazcube/code-template/controller.java");
+        tc.setService("/fazcube/code-template/service.java");
+        tc.setServiceImpl("/fazcube/code-template/serviceImpl.java");
+        tc.setEntity("/fazcube/code-template/entity.java");
+        tc.setMapper("/fazcube/code-template/mapper.java");
+//        tc.setXml("/templatesFreemaker/mapper.xml");
+        mpg.setTemplate(tc);
+
+
+
         mpg.execute();
     }
 }
