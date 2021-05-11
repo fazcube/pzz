@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -18,6 +20,8 @@ import com.baomidou.mybatisplus.generator.config.TemplateConfig;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 
 /**
  * @author  PZJ
@@ -26,7 +30,12 @@ import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
  * @desc    代码生成器
  **/
 
+@PropertySource(value = "classpath:fazcube/fazcube.properties")
 public class CodeGenerator {
+
+
+    @Value("${datasource.url}")
+    private String url;
 
     /**
      * 读取控制台内容
@@ -50,16 +59,17 @@ public class CodeGenerator {
     /**
      * RUN THIS
      */
-    public static void main(String[] args) {
+    public static void generator() {
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();
 
         // 全局配置
         GlobalConfig gc = new GlobalConfig();
-        String projectPath = System.getProperty("user.dir");
-        gc.setOutputDir(projectPath + "/src/main/java");
-        gc.setAuthor("Fazcube");
-        gc.setOpen(false);
+        String projectPath = System.getProperty("user.dir"); //
+        gc.setOutputDir(projectPath + "/src/main/java"); //
+        gc.setAuthor("Fazcube"); //作者名
+        gc.setIdType(IdType.ASSIGN_ID); //设置id生成策略
+        gc.setOpen(false); // 是否打开输出目录
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -70,20 +80,35 @@ public class CodeGenerator {
 
         mpg.setGlobalConfig(gc);
 
-        // 数据源配置
-        DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/shiro?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai");
-        // dsc.setSchemaName("public");
-        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
-        dsc.setUsername("root");
-        dsc.setPassword("123456");
-        mpg.setDataSource(dsc);
-
         // 包配置
         PackageConfig pc = new PackageConfig();
         pc.setModuleName(scanner("module name"));
         pc.setParent("com.faz");
         mpg.setPackageInfo(pc);
+
+        // 数据源配置
+        DataSourceConfig dsc = new DataSourceConfig();
+        dsc.setDbType(DbType.MYSQL); //数据库类型
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/shiro?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai");
+        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
+        dsc.setUsername("root");
+        dsc.setPassword("123456");
+        mpg.setDataSource(dsc);
+
+        // 策略配置 数据库表配置
+        StrategyConfig strategy = new StrategyConfig();
+        strategy.setNaming(NamingStrategy.underline_to_camel);// 数据库表映射到实体的命名策略 字段驼峰命名
+        strategy.setColumnNaming(NamingStrategy.underline_to_camel);// 数据库表字段映射到实体的命名策略, 未指定按照 naming 执行 字段驼峰命名
+        strategy.setEntityLombokModel(true);// 设置实体类是否使用lombok
+        strategy.setInclude(scanner("table name"));// 输入数据库中的表名，需要生成的表名
+        //strategy.setSuperEntityColumns("id");//公共实体类字段
+        //strategy.setSuperEntityClass("com.baomidou.mybatisplus.samples.generator.common.BaseEntity");
+        //strategy.setSuperControllerClass("com.baomidou.mybatisplus.samples.generator.common.BaseController");// 公共父类
+        strategy.setRestControllerStyle(true); //控制层：true——生成@RsetController false——生成@Controller
+        //strategy.setEntityTableFieldAnnotationEnable(true);// 表字段注释启动
+        strategy.setControllerMappingHyphenStyle(true);// 驼峰生成方法
+        //strategy.setTablePrefix(pc.getModuleName() + "_");
+        mpg.setStrategy(strategy);
 
         // 自定义配置
 //        InjectionConfig cfg = new InjectionConfig() {
@@ -105,23 +130,6 @@ public class CodeGenerator {
 //        mpg.setCfg(cfg);
 //        mpg.setTemplate(new TemplateConfig().setXml(null));
 
-        // 策略配置
-        StrategyConfig strategy = new StrategyConfig();
-        strategy.setNaming(NamingStrategy.underline_to_camel);
-        strategy.setColumnNaming(NamingStrategy.underline_to_camel);// 字段驼峰命名
-        strategy.setEntityLombokModel(true);// 设置实体类是否使用lombok
-
-        strategy.setInclude(scanner("table name"));// 输入数据库中的表名，需要生成的表名
-        //strategy.setSuperEntityColumns("id");//公共实体类字段
-        //strategy.setSuperEntityClass("com.baomidou.mybatisplus.samples.generator.common.BaseEntity");
-        //strategy.setSuperControllerClass("com.baomidou.mybatisplus.samples.generator.common.BaseController");// 公共父类
-
-        strategy.setRestControllerStyle(true); //控制层：true——生成@RsetController false——生成@Controller
-        //strategy.setEntityTableFieldAnnotationEnable(true);// 表字段注释启动
-        strategy.setControllerMappingHyphenStyle(true);// 驼峰生成方法
-        strategy.setTablePrefix(pc.getModuleName() + "_");
-        mpg.setStrategy(strategy);
-
 
         //模板生成器 选择 freemarker 引擎需要指定如下加，注意 pom 依赖必须有！
         mpg.setTemplateEngine(new FreemarkerTemplateEngine());
@@ -135,9 +143,11 @@ public class CodeGenerator {
 //        tc.setXml("/templatesFreemaker/mapper.xml");
         mpg.setTemplate(tc);
 
-
-
         mpg.execute();
+    }
+
+    public static void main(String[] args) {
+        generator();
     }
 }
 
