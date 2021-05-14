@@ -28,21 +28,21 @@ public class SysUserController {
     private RedisUtil redisUtil;
 
     @RequestMapping("/login")
-    public Result<?> login(String username, String password){
-        System.out.println(username+"-"+password);
+    public Result<?> login(@RequestBody SysUser sysUser){
+        System.out.println(sysUser.getUsername()+"-"+sysUser.getPassword());
         //验证账户名和密码是否有效
-        SysUser user = sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username));
+        SysUser user = sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,sysUser.getUsername()));
         if(user==null){
             return Result.error("用户不存在！");
         }
         //获取password的加密md5
-        String md5 = new Md5Hash(password,user.getSalt(),16).toHex();
+        String md5 = new Md5Hash(sysUser.getPassword(),user.getSalt(),16).toHex();
         //对比数据库中的密码
         if(!md5.equals(user.getPassword())){
             return Result.error("用户名或密码错误！");
         }
         //创建token
-        String token = JwtUtil.sign(username,md5);
+        String token = JwtUtil.sign(sysUser.getUsername(),md5);
         // 设置token缓存有效时间
         redisUtil.set(JwtUtil.PREFIX_USER_TOKEN + token, token);
         redisUtil.expire(JwtUtil.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);

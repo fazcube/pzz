@@ -60,7 +60,7 @@ public class ${table.controllerName} {
                           @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                           @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                           HttpServletRequest req){
-        QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<${entity}> queryWrapper = QueryGenerator.initQueryWrapper(${table.entityPath});
         Page<${entity}> page = new Page<>(pageNo, pageSize);
         IPage<${entity}> pageList = ${table.entityPath}Service.page(page,queryWrapper);
         return Result.OK(pageList);

@@ -5,7 +5,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.faz.springbootshiro.entity.Store;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -76,11 +75,11 @@ public class QueryGenerator {
                 || "sort".equals(name) || "order".equals(name);
     }
 
-    public static void main(String[] args) {
-        Store store = new Store();
-        store.setId("10086");
-        store.setStoreName("深圳福田");
-        store.setCount("");
-        initQueryWrapper(store);
-    }
+//    public static void main(String[] args) {
+//        Store store = new Store();
+//        store.setId("10086");
+//        store.setStoreName("深圳福田");
+//        store.setCount("");
+//        initQueryWrapper(store);
+//    }
 }
