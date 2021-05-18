@@ -1,5 +1,7 @@
 package com.faz.springbootshiro.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -28,18 +30,22 @@ public class SysUserController {
     private RedisUtil redisUtil;
 
     @RequestMapping("/login")
-    public Result<?> login(@RequestBody SysUser sysUser){
+    @CrossOrigin
+    public Result<JSONObject> login(@RequestBody SysUser sysUser){
+        Result<JSONObject> result = new Result<JSONObject>();
         System.out.println(sysUser.getUsername()+"-"+sysUser.getPassword());
         //验证账户名和密码是否有效
         SysUser user = sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,sysUser.getUsername()));
         if(user==null){
-            return Result.error("用户不存在！");
+            result.error500("用户不存在！");
+            return result;
         }
         //获取password的加密md5
         String md5 = new Md5Hash(sysUser.getPassword(),user.getSalt(),16).toHex();
         //对比数据库中的密码
         if(!md5.equals(user.getPassword())){
-            return Result.error("用户名或密码错误！");
+            result.error500("用户名或密码错误！");
+            return result;
         }
         //创建token
         String token = JwtUtil.sign(sysUser.getUsername(),md5);
@@ -47,8 +53,8 @@ public class SysUserController {
         redisUtil.set(JwtUtil.PREFIX_USER_TOKEN + token, token);
         redisUtil.expire(JwtUtil.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("token",token);
+        JSONObject json = new JSONObject();
+        json.put("token",token);
 
 //        Subject subject = SecurityUtils.getSubject();
 //        try {
@@ -67,8 +73,10 @@ public class SysUserController {
 //            e.printStackTrace();
 //            return Result.error(e.getMessage());
 //        }
-
-        return Result.OK("登录成功！",map);
+        json.put("userInfo",user);
+        result.success("登陆成功！");
+        result.setResult(json);
+        return result;
     }
 
 

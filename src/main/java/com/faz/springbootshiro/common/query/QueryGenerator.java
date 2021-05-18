@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.faz.springbootshiro.utils.ConvertUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -41,7 +42,7 @@ public class QueryGenerator {
             try {
                 //如果本次循环的字段是一个无效字段，则跳出本次循环
                 //isReadable 如果指定的属性名标识指定bean上的可读属性，则返回true；否则，返回false。
-                if(judgedIsUselessField(name) || !PropertyUtils.isReadable(obj,name)){
+                if(ConvertUtils.judgedIsUselessField(name) || !PropertyUtils.isReadable(obj,name)){
                     continue;
                 }
                 Object value = PropertyUtils.getSimpleProperty(obj, name);
@@ -56,23 +57,13 @@ public class QueryGenerator {
 //                            continue;
 //                        }
 //                    }
-                    queryWrapper.eq(name,value);
+                    //将字段的驼峰写法转换成数据库相应的写法 如createBy => create_by
+                    queryWrapper.eq(ConvertUtils.camelToUnderline(name),value);
                 }
             }catch (Exception e){
                 log.error(e.getMessage(),e);
             }
         }
-    }
-
-    /**
-     * 判断字段是否是以下字符串，如果是，则这是一个无效的字段（即不参与循环拼接）。
-     * @param name
-     * @return
-     */
-    private static boolean judgedIsUselessField(String name) {
-        return "class".equals(name) || "ids".equals(name)
-                || "page".equals(name) || "rows".equals(name)
-                || "sort".equals(name) || "order".equals(name);
     }
 
 //    public static void main(String[] args) {
