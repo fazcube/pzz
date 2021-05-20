@@ -63,6 +63,7 @@ public class ShiroConfig {
         map.put("/user/register","anon");
 
         //map.put("/springbootshiro/**","anon");
+        map.put("/faz/**","anon");
 
         //创建 加载自定义的 jwtFilter 并取名为 jwt
         Map<String, Filter> filterMap = new HashMap<String,Filter>(1);

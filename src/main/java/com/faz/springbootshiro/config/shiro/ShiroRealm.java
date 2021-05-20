@@ -147,7 +147,7 @@ public class ShiroRealm extends AuthorizingRealm {
     public boolean jwtTokenRefresh(String token, String username, String password) {
         String cacheToken = String.valueOf(redisUtil.get(JwtUtil.PREFIX_USER_TOKEN + token));
         //如果redis中有相应的token 那么进入if
-        if (cacheToken!=null && !cacheToken.equals("")) {
+        if (cacheToken!=null && !cacheToken.equals("") && !cacheToken.equals("null")) {
             // 校验token有效性 如果redis中存储的value还是有效的 那么直接返回true 否则重新生成
             if (!JwtUtil.verify(cacheToken, username, password)) {
                 String newToken = JwtUtil.sign(username, password);

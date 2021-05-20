@@ -42,4 +42,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         int count = sysUserDao.selectCount(new LambdaQueryWrapper<SysUser>());
         return null;
     }
+
+    /**
+     * 修改密码
+     * @param sysUser
+     * @return
+     */
+    @Override
+    public boolean updatePassword(SysUser sysUser,String newPassword) {
+        //1、设置随机盐
+        String salt = RandomUtil.randomString(8);
+        sysUser.setSalt(salt);
+        //2.生成加密密码
+        Md5Hash md5Hash = new Md5Hash(newPassword,salt,16);
+        sysUser.setPassword(md5Hash.toHex());
+        if(sysUserDao.updateById(sysUser) != 0){
+            return true;
+        }
+        return false;
+    }
 }

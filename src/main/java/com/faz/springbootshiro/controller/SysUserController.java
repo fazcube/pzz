@@ -11,6 +11,7 @@ import com.faz.springbootshiro.common.vo.Result;
 import com.faz.springbootshiro.entity.SysUser;
 import com.faz.springbootshiro.service.SysUserService;
 import com.faz.springbootshiro.config.jwt.JwtUtil;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -56,23 +57,6 @@ public class SysUserController {
         JSONObject json = new JSONObject();
         json.put("token",token);
 
-//        Subject subject = SecurityUtils.getSubject();
-//        try {
-//            //基于session的登录方式
-//            //subject.login(new UsernamePasswordToken(username,password));
-//            //基于token的登录方式
-//            subject.login(new JwtToken(token));
-//            return Result.OK(token);
-//        }catch (IncorrectCredentialsException e){
-//            System.out.println("密码错误！");
-//            return Result.error("密码错误！");
-//        }catch (UnknownAccountException e){
-//            System.out.println("用户不存在！");
-//            return Result.error("用户不存在！");
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return Result.error(e.getMessage());
-//        }
         json.put("userInfo",user);
         result.success("登陆成功！");
         result.setResult(json);
@@ -86,6 +70,21 @@ public class SysUserController {
             return "redirect:/login.jsp";
         }
         return "redirect:/reg.jsp";
+    }
+
+    @PostMapping("/updatePassword")
+    public Result<?> updatePassword(@RequestBody JSONObject json){
+        String oldPassword = json.getString("oldPassword");
+        String newPassword = json.getString("newPassword");
+        SysUser user = (SysUser) SecurityUtils.getSubject().getPrincipal();
+        //获取password的加密md5
+        String md5 = new Md5Hash(oldPassword,user.getSalt(),16).toHex();
+        //对比数据库中的密码
+        if(!md5.equals(user.getPassword())){
+            return Result.error("输入旧密码有误");
+        }
+        sysUserService.updatePassword(user,newPassword);
+        return Result.OK("修改成功！");
     }
 
     @GetMapping(value = "/list")
