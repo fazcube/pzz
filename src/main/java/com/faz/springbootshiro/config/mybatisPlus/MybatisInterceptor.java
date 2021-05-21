@@ -3,6 +3,7 @@ package com.faz.springbootshiro.config.mybatisPlus;
 import cn.hutool.core.util.ObjectUtil;
 import com.faz.springbootshiro.entity.SysUser;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
@@ -12,23 +13,21 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
-/**
+/******************************************************************************************
  * @author  PZJ
  * @create  2021/5/10 23:59
  * @email   wuchzh0@gmail.com
  * @desc    mybatis拦截器，自动注入创建时间和更新时间
- *
+ * **
  * @Intercepts注解 标记这个类是一个拦截器
  * @Signature注解 指明该拦截器需要拦截哪一个接口的哪一个方法
  *  type	四种类型接口中的某一个接口，如Executor.class。
- *  method	对应接口中的某一个方法名，比如Executor的query方法。
+ *  method	对应接口中的某一个方法名，比如Executor类的update，query，commit，rollback等方法
+ *      update这个拦截器拦截Executor接口的update方法（其实也就是SqlSession的新增，删除，修改操作），所有执行executor的update方法都会被该拦截器拦截到。
  *  args	对应接口中的某一个方法的参数，比如Executor中query方法因为重载原因，有多个，args就是指明参数类型，从而确定是具体哪一个方法。
- **/
+ ******************************************************************************************/
 @Slf4j
 @Component
 @Intercepts({@Signature(
@@ -74,7 +73,73 @@ public class MybatisInterceptor implements Interceptor {
                         field.setAccessible(false);
                     }
                 }
+                // insert命令下 注入创建时间
+                if(field.getName().equals("createTime")){
+                    field.setAccessible(true);
+                    Object local_createTime = field.get(parameter);
+                    field.setAccessible(false);
+                    if(ObjectUtil.isEmpty(local_createTime)){
+                        field.setAccessible(true);
+                        field.set(parameter,new Date());
+                        field.setAccessible(false);
+                    }
+                }
             }
+        }
+        //如果是update命令类型，执行以下操作
+        if(SqlCommandType.UPDATE == sqlCommandType){
+            //获取用户信息
+            SysUser user = getUser();
+            //获取所有参数
+            Field[] allFields = null;
+            if (parameter instanceof MapperMethod.ParamMap) {
+                MapperMethod.ParamMap<?> p = (MapperMethod.ParamMap<?>) parameter;
+                //update-begin-author:scott date:20190729 for:批量更新报错issues/IZA3Q--
+                if (p.containsKey("et")) {
+                    parameter = p.get("et");
+                } else {
+                    parameter = p.get("param1");
+                }
+                //update-end-author:scott date:20190729 for:批量更新报错issues/IZA3Q-
+
+                //update-begin-author:scott date:20190729 for:更新指定字段时报错 issues/#516-
+                if (parameter == null) {
+                    return invocation.proceed();
+                }
+                //update-end-author:scott date:20190729 for:更新指定字段时报错 issues/#516-
+
+                allFields = getAllFields(parameter);
+            } else {
+                allFields = getAllFields(parameter);
+            }
+
+            for (Field field : allFields) {
+                System.out.println("取出字段信息："+field);
+                // insert命令下 注入更新信息的人
+                if(field.getName().equals("updateBy")){
+                    field.setAccessible(true);// 先把字段的可访问属性设置为true
+                    Object local_updateBy = field.get(parameter);
+                    field.setAccessible(false);
+                    // 如果传入的对象本身就带有createBy的值，那么直接不做操作，否则进行字段赋值
+                    if(ObjectUtil.isEmpty(local_updateBy)){
+                        field.setAccessible(true);
+                        field.set(parameter,user.getUsername()); // 将用户名赋值
+                        field.setAccessible(false);
+                    }
+                }
+                // insert命令下 注入更新时间
+                if(field.getName().equals("updateTime")){
+                    field.setAccessible(true);
+                    Object local_updateTime = field.get(parameter);
+                    field.setAccessible(false);
+                    if(ObjectUtil.isEmpty(local_updateTime)){
+                        field.setAccessible(true);
+                        field.set(parameter,new Date());
+                        field.setAccessible(false);
+                    }
+                }
+            }
+
         }
         return invocation.proceed();
     }
