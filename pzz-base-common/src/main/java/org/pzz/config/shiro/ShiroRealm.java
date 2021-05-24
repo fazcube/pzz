@@ -1,8 +1,5 @@
 package org.pzz.config.shiro;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
@@ -10,23 +7,17 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.pzz.common.api.CommonAPI;
-import org.pzz.common.vo.SysPermission;
-import org.pzz.common.vo.SysRole;
-import org.pzz.common.vo.SysUser;
+import org.pzz.common.vo.CommonSysUser;
 import org.pzz.config.jwt.JwtToken;
 import org.pzz.config.jwt.JwtUtil;
 import org.pzz.config.redis.RedisUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @author  PZJ
@@ -99,7 +90,7 @@ public class ShiroRealm extends AuthorizingRealm {
         if(token == null){
             throw new AuthenticationException("token为空！");
         }
-        SysUser user = checkUserTokenIsEffect(token);
+        CommonSysUser user = checkUserTokenIsEffect(token);
         if(user!=null){
             log.info("======================="+user.getUsername()+"认证通过=================================");
         }
@@ -111,14 +102,14 @@ public class ShiroRealm extends AuthorizingRealm {
      * @param token
      * @return
      */
-    public SysUser checkUserTokenIsEffect(String token){
+    public CommonSysUser checkUserTokenIsEffect(String token){
         // 从token里面取到username
         String username = JwtUtil.getUsername(token);
         if(username == null){
             throw new AuthenticationException("token非法！");
         }
         // 根据用户名查询有无对应用户
-        SysUser user = commonAPI.getUserByUsername(username);
+        CommonSysUser user = commonAPI.getUserByUsername(username);
         System.out.println("commonAPI查到的用户："+user);
         //SysUser user = sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username));
         if (user == null) {

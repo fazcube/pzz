@@ -9,7 +9,7 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.*;
 import org.apache.shiro.SecurityUtils;
-import org.pzz.common.vo.SysUser;
+import org.pzz.common.vo.CommonSysUser;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -54,7 +54,7 @@ public class MybatisInterceptor implements Interceptor {
         //如果是insert命令类型，执行以下操作
         if(SqlCommandType.INSERT == sqlCommandType){
             //获取用户信息
-            SysUser user = getUser();
+            CommonSysUser user = getUser();
             Field[] allFields = getAllFields(parameter);
 
             for (Field field : allFields) {
@@ -89,7 +89,7 @@ public class MybatisInterceptor implements Interceptor {
         //如果是update命令类型，执行以下操作
         if(SqlCommandType.UPDATE == sqlCommandType){
             //获取用户信息
-            SysUser user = getUser();
+            CommonSysUser user = getUser();
             //获取所有参数
             Field[] allFields = null;
             if (parameter instanceof MapperMethod.ParamMap) {
@@ -177,10 +177,10 @@ public class MybatisInterceptor implements Interceptor {
      * 获取用户信息
      * @return
      */
-    public static SysUser getUser(){
-        SysUser sysUser = null;
+    public static CommonSysUser getUser(){
+        CommonSysUser sysUser = null;
         try{
-            sysUser = SecurityUtils.getSubject().getPrincipal() == null?null : (SysUser) SecurityUtils.getSubject().getPrincipal();
+            sysUser = SecurityUtils.getSubject().getPrincipal() == null?null : (CommonSysUser) SecurityUtils.getSubject().getPrincipal();
         }catch (Exception e){
             log.error("获取用户信息失败！"+e.getMessage());
         }

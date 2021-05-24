@@ -1,6 +1,5 @@
 package org.pzz.modules.api.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.pzz.modules.entity.SysUser;
 import org.pzz.modules.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,8 @@ public class SysBaseApiController {
      * @return
      */
     @GetMapping("/getUserByUsername")
-    public SysUser getUserByUsername(@RequestParam("username") String username){
-        return sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username));
+    public void getUserByUsername(@RequestParam("username") String username){
+        System.out.println("传来的："+username);
+        //return sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username));
     }
 }

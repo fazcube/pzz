@@ -1,4 +1,4 @@
-package org.pzz.config;
+package pzz.config;
 
 import feign.Feign;
 import feign.Logger;
@@ -6,7 +6,6 @@ import feign.RequestInterceptor;
 import feign.codec.Encoder;
 import feign.form.spring.SpringFormEncoder;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
