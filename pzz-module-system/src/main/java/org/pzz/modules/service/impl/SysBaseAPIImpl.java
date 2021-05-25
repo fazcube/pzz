@@ -25,8 +25,11 @@ public class SysBaseAPIImpl implements SysBaseAPI {
 
     @Override
     public CommonSysUser getUserByUsername(String username) {
+        //接口返回的是CommmonUser对象 所以这里new一个准备返回
         CommonSysUser commonSysUser = new CommonSysUser();
+        //根据拿到的参数查询出对应的SysUser对象
         SysUser sysUser = sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username));
+        //使用工具类copy对象
         BeanUtils.copyProperties(sysUser,commonSysUser);
         return commonSysUser;
     }
