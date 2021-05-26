@@ -31,6 +31,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         try{
+            System.out.println("进去jwt过滤器");
             //检测header里面的token内容是否正确
             executeLogin(request,response);
             return true;

@@ -12,6 +12,7 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.pzz.common.api.CommonAPI;
+import org.pzz.common.utils.SpringContextUtils;
 import org.pzz.common.vo.CommonSysPermission;
 import org.pzz.common.vo.CommonSysRole;
 import org.pzz.common.vo.CommonSysUser;
@@ -88,6 +89,7 @@ public class ShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         //拿到token
         String token = (String) authenticationToken.getCredentials();
+        System.out.println(SpringContextUtils.getHttpServletRequest().getRequestURI());
         if(token == null){
             throw new AuthenticationException("token为空！");
         }

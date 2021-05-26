@@ -1,5 +1,9 @@
 package org.pzz.modules.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.pzz.common.query.QueryGenerator;
@@ -27,7 +31,7 @@ import java.util.Arrays;
  * @email   wuchzh0@gmail.com
  * @desc    门店表前端控制器
  */
-
+@Api(value = "门店表")
 @Slf4j
 @RestController
 @RequestMapping("/springbootshiro/store")
@@ -48,8 +52,8 @@ public class StoreController {
      * @param req 请求携带的特殊参数
      * @return 查询结果
      */
+    @ApiOperation(value = "门店表-分页条件查询")
     @GetMapping(value = "/list")
-    @RequiresRoles("admin")
     public Result<?> queryByList(Store store,
                                  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
@@ -66,6 +70,7 @@ public class StoreController {
      * @param id 需要查询的id
      * @return 返回查询结果
      */
+    @ApiOperation(value = "门店表-通过id查询")
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
         Store store = storeService.getById(id);
@@ -81,6 +86,7 @@ public class StoreController {
      * @param store 添加参数
      * @return 返回添加结果
      */
+    @ApiOperation(value = "门店表-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody Store store){
         System.out.println(store);

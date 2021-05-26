@@ -56,17 +56,21 @@ public class ShiroConfig {
         //配置系统的受限资源和公开资源
         Map<String,String> map = new HashMap<>();
 
-        map.put("/login.jsp","anon");
-        map.put("/reg.jsp","anon");
-
         map.put("/user/login","anon");
         map.put("/user/register","anon");
         map.put("/springbootshiro/store/testV","anon");
         map.put("/sys/api/**","anon");
 
+        map.put("/faz/**","anon");
+
+        //swagger相关
+        map.put("/swagger**/**","anon");
+        map.put("/webjars/**","anon");
+        map.put("/v3/**","anon");
+        map.put("/doc.html","anon");
 
         //map.put("/springbootshiro/**","anon");
-        map.put("/faz/**","anon");
+
 
         //创建 加载自定义的 jwtFilter 并取名为 jwt
         Map<String, Filter> filterMap = new HashMap<String,Filter>(1);

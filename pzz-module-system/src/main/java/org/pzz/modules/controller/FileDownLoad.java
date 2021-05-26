@@ -13,8 +13,13 @@ import java.net.URLEncoder;
 
 
 @RestController
-@RequestMapping("/faz")
+@RequestMapping("/faz/file")
 public class FileDownLoad {
+
+    @RequestMapping("/testStr")
+    public String testStr(){
+        return "ok";
+    }
 
     @RequestMapping("/download")
     public Result<?> uploadStart(HttpServletResponse response) {
