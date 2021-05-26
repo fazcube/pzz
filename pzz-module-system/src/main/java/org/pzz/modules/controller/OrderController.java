@@ -1,5 +1,7 @@
 package org.pzz.modules.controller;
 
+import org.pzz.common.api.SysBaseAPI;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,10 +25,14 @@ public class OrderController {
 //        return Result.OK(subject.getPrincipal());
 //    }
 
-    @PostMapping("/test/{id}")
-    public String testRest(@PathVariable("id") String id){
-        System.out.println(id);
-        return id;
+    @Autowired
+    private SysBaseAPI sysBaseAPI;
+
+    @PostMapping("/test/{name}")
+    public String testRest(@PathVariable("name") String name){
+        System.out.println(name);
+        System.out.println(sysBaseAPI.getUserByUsername(name));
+        return "ok";
     }
 
 }

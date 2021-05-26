@@ -22,22 +22,15 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
     @Resource
     private SysPermissionMapper sysPermissionDao;
 
+
     /**
-     * 根据角色id查询角色的权限集合
-     * @param roleId 角色id
-     * @return 权限集合
+     * 根据用户名查询到用户的权限集合
+     * @param username
+     * @return
      */
     @Override
-    public List<SysPermission> findPermissionByRoleId(String roleId) {
-        List<SysPermission> list = new ArrayList<>();
-        List<SysRolePermission> sysRolePermissions = sysRolePermissionDao.selectList(new LambdaQueryWrapper<SysRolePermission>()
-                .eq(SysRolePermission::getRoleId, roleId));
-        if(CollectionUtils.isEmpty(sysRolePermissions)){
-            return list;
-        }
-        for (SysRolePermission sysRolePermission : sysRolePermissions) {
-            list.add(sysPermissionDao.selectById(sysRolePermission.getPermissionId()));
-        }
-        return list;
+    public List<SysPermission> getPermissionSetByUsername(String username) {
+        sysRolePermissionDao.getPermissionSetByUsername(username);
+        return null;
     }
 }

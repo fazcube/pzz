@@ -7,7 +7,5 @@ public interface SysUserService extends IService<SysUser> {
 
     boolean register(SysUser sysUser);
 
-    SysUser randomOne();
-
     boolean updatePassword(SysUser sysUser,String newPassword);
 }

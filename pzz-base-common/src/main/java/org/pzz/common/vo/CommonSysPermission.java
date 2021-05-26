@@ -7,7 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class SysPermission implements Serializable {
+public class CommonSysPermission implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

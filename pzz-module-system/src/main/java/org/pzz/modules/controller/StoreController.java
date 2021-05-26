@@ -1,5 +1,7 @@
 package org.pzz.modules.controller;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.pzz.common.query.QueryGenerator;
 import org.pzz.common.utils.CodeGenerator;
 import org.pzz.common.vo.Result;
@@ -47,7 +49,7 @@ public class StoreController {
      * @return 查询结果
      */
     @GetMapping(value = "/list")
-    @CrossOrigin
+    @RequiresRoles("admin")
     public Result<?> queryByList(Store store,
                                  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,

@@ -1,15 +1,19 @@
 package org.pzz.config.shiro;
 
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.pzz.common.api.CommonAPI;
+import org.pzz.common.vo.CommonSysPermission;
+import org.pzz.common.vo.CommonSysRole;
 import org.pzz.common.vo.CommonSysUser;
 import org.pzz.config.jwt.JwtToken;
 import org.pzz.config.jwt.JwtUtil;
@@ -18,6 +22,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author  PZJ
@@ -55,22 +61,20 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         log.info("=======================开始授权=================================");
-//        SysUser primaryPrincipal = (SysUser) principalCollection.getPrimaryPrincipal();
-//        //根据primaryPrincipal查询用户的角色
-//        List<SysRole> list = sysUserRoleService.findRoleByUsername(primaryPrincipal.getUsername());
-//        if(!CollectionUtils.isEmpty(list)){
-//            SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-//            for (SysRole sysRole : list) {
-//                simpleAuthorizationInfo.addRole(sysRole.getName());
-//                List<SysPermission> permissionByRoleId = sysRolePermissionService.findPermissionByRoleId(sysRole.getId());
-//                if(!CollectionUtils.isEmpty(permissionByRoleId)){
-//                    permissionByRoleId.forEach(sysPermission -> {
-//                        simpleAuthorizationInfo.addStringPermission(sysPermission.getName());
-//                    });
-//                }
-//            }
-//            return simpleAuthorizationInfo;
-//        }
+        CommonSysUser primaryPrincipal = (CommonSysUser) principalCollection.getPrimaryPrincipal();
+        System.out.println("开始授权primary:"+primaryPrincipal);
+        //根据primaryPrincipal查询用户的角色
+        Set<String> roleSet = commonAPI.getRoleSetByUsername(primaryPrincipal.getUsername());
+        if(CollectionUtils.isNotEmpty(roleSet)){
+            SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+            //添加角色集合
+            simpleAuthorizationInfo.addRoles(roleSet);
+
+            Set<String> permissionSet = commonAPI.getPermissionSetByUsername(primaryPrincipal.getUsername());
+            simpleAuthorizationInfo.addStringPermissions(permissionSet);
+
+            return simpleAuthorizationInfo;
+        }
         return null;
     }
 
@@ -82,11 +86,8 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-        //log.info("=======================开始认证=================================");
         //拿到token
         String token = (String) authenticationToken.getCredentials();
-//        String username = JwtUtil.getUsername(token);
-//        UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         if(token == null){
             throw new AuthenticationException("token为空！");
         }
@@ -110,8 +111,6 @@ public class ShiroRealm extends AuthorizingRealm {
         }
         // 根据用户名查询有无对应用户
         CommonSysUser user = commonAPI.getUserByUsername(username);
-        System.out.println("commonAPI查到的用户："+user);
-        //SysUser user = sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, username));
         if (user == null) {
             throw new AuthenticationException("用户不存在!");
         }

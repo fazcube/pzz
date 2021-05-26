@@ -37,12 +37,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return false;
     }
 
-    @Override
-    public SysUser randomOne() {
-        int count = sysUserDao.selectCount(new LambdaQueryWrapper<SysUser>());
-        return null;
-    }
-
     /**
      * 修改密码
      * @param sysUser
