@@ -29,7 +29,7 @@ import java.util.Arrays;
  * @email   wuchzh0@gmail.com
  * @desc    门店表前端控制器
  */
-@Api(value = "门店表")
+@Api(tags = "门店表接口")
 @Slf4j
 @RestController
 @RequestMapping("/springbootshiro/store")

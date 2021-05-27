@@ -1,6 +1,6 @@
 package pzz.common.system.api;
 
-import org.springframework.cloud.openfeign.FeignClient;
+//import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @email   wuchzh0@gmail.com
  * @desc    创建FeignClient
  **/
-@FeignClient(name = "sysBaseApi",url = "http://127.0.0.1:8888/shiro")
+//@FeignClient(name = "sysBaseApi",url = "http://127.0.0.1:8888/shiro")
 public interface SysBaseAPI {
 
     /**

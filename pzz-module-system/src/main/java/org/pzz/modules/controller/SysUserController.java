@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.pzz.common.vo.Result;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Api(tags = "用户表接口")
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class SysUserController {
@@ -28,8 +33,8 @@ public class SysUserController {
     @Autowired
     private RedisUtil redisUtil;
 
-    @RequestMapping("/login")
-    @CrossOrigin
+    @ApiOperation(value = "用户表-用户登录")
+    @RequestMapping(value = "/login",method = RequestMethod.POST)
     public Result<JSONObject> login(@RequestBody SysUser sysUser){
         Result<JSONObject> result = new Result<JSONObject>();
         System.out.println(sysUser.getUsername()+"-"+sysUser.getPassword());
@@ -62,7 +67,8 @@ public class SysUserController {
     }
 
 
-    @RequestMapping("/register")
+    @ApiOperation(value = "用户表-用户注册")
+    @RequestMapping(value = "/register",method = RequestMethod.POST)
     public String register(SysUser user){
         if(sysUserService.register(user)){
             return "redirect:/login.jsp";
