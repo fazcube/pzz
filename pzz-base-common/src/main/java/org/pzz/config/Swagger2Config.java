@@ -57,7 +57,7 @@ public class Swagger2Config implements WebMvcConfigurer{
         return new ApiInfoBuilder()
                 .title("pzz接口文档")
                 .description("pzz框架")
-                .contact(new Contact("pzz", "https://github.com/fazcube/shiro", "wuchzh0@gmail.com"))
+                .contact(new Contact("pzz", "https://github.com/fazcube/pzz", "wuchzh0@gmail.com"))
                 .version("1.0.0")
                 .build();
     }

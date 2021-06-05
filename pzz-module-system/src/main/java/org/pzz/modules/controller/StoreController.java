@@ -29,7 +29,7 @@ import java.util.Arrays;
  * @email   wuchzh0@gmail.com
  * @desc    门店表前端控制器
  */
-@Api(tags = "门店表")
+@Api(value = "门店表")
 @Slf4j
 @RestController
 @RequestMapping("/springbootshiro/store")
@@ -38,6 +38,8 @@ public class StoreController {
     @Autowired
     private StoreService storeService;
 
+    @Autowired
+    private CodeGenerator codeGenerator;
 
     /**
      * 分页列表查询
@@ -132,6 +134,11 @@ public class StoreController {
             return Result.OK("批量删除成功!");
         }
         return Result.OK("批量删除失败!");
+    }
+
+    @RequestMapping("/testV")
+    public String testV(){
+        return codeGenerator.testValue();
     }
 
 }

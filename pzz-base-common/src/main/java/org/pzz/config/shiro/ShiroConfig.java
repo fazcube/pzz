@@ -31,10 +31,10 @@ import java.util.Map;
 public class ShiroConfig {
 
     @Value("${spring.redis.host}")
-    private String host = "127.0.0.1";
+    private String host;
 
     @Value("${spring.redis.port}")
-    private int port = 6379;
+    private int port;
 
     public static final int USER_INFO_TIME = 3600;
 
@@ -58,11 +58,11 @@ public class ShiroConfig {
 
         map.put("/user/login","anon");
         map.put("/user/register","anon");
+        map.put("/springbootshiro/store/testV","anon");
         map.put("/sys/api/**","anon");
 
         map.put("/faz/**","anon");
 
-        map.put("/**/*.ico","anon");
 
         //swagger相关
         map.put("/doc.html","anon");
