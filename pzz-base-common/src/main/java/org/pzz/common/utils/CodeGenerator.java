@@ -22,12 +22,12 @@ import java.util.Scanner;
  **/
 
 @Component
-@PropertySource(value = "classpath:fazcube/fazcube.properties")
+//@PropertySource(value = "classpath:fazcube/fazcube.properties")
 public class CodeGenerator {
 
 
-    @Value("${datasource.url}")
-    private String url;
+    //@Value("${datasource.url}")
+    //private String url;
 
     /**
      * 读取控制台内容
@@ -58,10 +58,12 @@ public class CodeGenerator {
         // 全局配置
         GlobalConfig gc = new GlobalConfig();
         String projectPath = System.getProperty("user.dir"); //
-        gc.setOutputDir(projectPath + "/src/main/java"); //
+        String moduleName = scanner("module name");
+        gc.setOutputDir(projectPath + "/" + moduleName + "/src/main/java"); //
         gc.setAuthor("Fazcube"); //作者名
         gc.setIdType(IdType.ASSIGN_ID); //设置id生成策略
         gc.setOpen(false); // 是否打开输出目录
+        gc.setSwagger2(true); // 是否开启swagger2
 
         // 自定义文件命名，注意 %s 会自动填充表实体属性！
         gc.setMapperName("%sMapper");
@@ -74,8 +76,8 @@ public class CodeGenerator {
 
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setModuleName(scanner("module name"));
-        pc.setParent("com.faz");
+        pc.setModuleName(scanner("modules name"));
+        pc.setParent("org.pzz.modules");
         mpg.setPackageInfo(pc);
 
         // 数据源配置
@@ -98,7 +100,7 @@ public class CodeGenerator {
         //strategy.setSuperControllerClass("com.baomidou.mybatisplus.samples.generator.common.BaseController");// 公共父类
         strategy.setRestControllerStyle(true); //控制层：true——生成@RsetController false——生成@Controller
         //strategy.setEntityTableFieldAnnotationEnable(true);// 表字段注释启动
-        strategy.setControllerMappingHyphenStyle(true);// 驼峰生成方法
+        strategy.setControllerMappingHyphenStyle(false);// 设置url连字符样式，设置为true则sys_user会解析成sys-user，设置false则为sysUser
         //strategy.setTablePrefix(pc.getModuleName() + "_");
         mpg.setStrategy(strategy);
 
@@ -142,9 +144,5 @@ public class CodeGenerator {
         generator();
     }
 
-    public String testValue(){
-        System.out.println(url);
-        return url;
-    }
 }
 

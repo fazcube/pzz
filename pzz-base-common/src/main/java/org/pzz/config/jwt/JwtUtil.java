@@ -84,13 +84,13 @@ public class JwtUtil {
 	 * 测试方法
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		String token = sign("aaa", "123456");
-		System.out.println("token:" + token);
-		System.out.println(getUsername(token));
-		System.out.println(getIssuedAt(token));
-		System.out.println(verify(token, "aaa", "123456"));
-	}
+//	public static void main(String[] args) {
+//		String token = sign("aaa", "123456");
+//		System.out.println("token:" + token);
+//		System.out.println(getUsername(token));
+//		System.out.println(getIssuedAt(token));
+//		System.out.println(verify(token, "aaa", "123456"));
+//	}
 
 
 }

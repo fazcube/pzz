@@ -1,9 +1,7 @@
 package org.pzz.common.api;
 
-import org.pzz.common.vo.CommonSysRole;
 import org.pzz.common.vo.CommonSysUser;
 
-import java.util.List;
 import java.util.Set;
 
 public interface SysBaseAPI extends CommonAPI{

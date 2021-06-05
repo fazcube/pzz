@@ -2,6 +2,8 @@ package ${package.Controller};
 
 import ${package.Service}.${table.serviceName};
 import ${package.Entity}.${entity};
+import org.pzz.common.vo.Result;
+import org.pzz.common.query.QueryGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,9 +18,12 @@ import org.springframework.stereotype.Controller;
 <#if superControllerClassPackage??>
 import ${superControllerClassPackage};
 </#if>
+<#if swagger2>
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+</#if>
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import com.faz.springbootshiro.common.vo.Result;
 
 
 /**
@@ -29,6 +34,9 @@ import com.faz.springbootshiro.common.vo.Result;
  */
 
 @Slf4j
+<#if swagger2>
+@Api(tags = "${table.comment!}")
+</#if>
 <#if restControllerStyle>
 @RestController
 <#else>
@@ -38,9 +46,9 @@ import com.faz.springbootshiro.common.vo.Result;
 <#if kotlin>
 class ${table.controllerName}<#if superControllerClass??> : ${superControllerClass}()</#if>
 <#else>
-    <#if superControllerClass??>
+<#if superControllerClass??>
 public class ${table.controllerName} extends ${superControllerClass} {
-    <#else>
+<#else>
 public class ${table.controllerName} {
 
     @Autowired
@@ -55,6 +63,9 @@ public class ${table.controllerName} {
      * @param req 请求携带的特殊参数
      * @return 查询结果
      */
+    <#if swagger2>
+    @ApiOperation(value = "${table.comment!}-分页列表条件查询", notes = "${table.comment!}-分页列表条件查询")
+    </#if>
     @GetMapping(value = "/list")
     public Result<?> queryByList(${entity} ${table.entityPath},
                           @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -72,6 +83,9 @@ public class ${table.controllerName} {
      * @param id 需要查询的id
      * @return 返回查询结果
      */
+    <#if swagger2>
+    @ApiOperation(value = "${table.comment!}-通过id查询", notes = "${table.comment!}-通过id查询")
+    </#if>
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
         ${entity} ${table.entityPath} = ${table.entityPath}Service.getById(id);
@@ -82,11 +96,14 @@ public class ${table.controllerName} {
     }
 
     /**
-     *   添加
+     * 添加
      *
      * @param ${table.entityPath} 添加参数
      * @return 返回添加结果
      */
+    <#if swagger2>
+    @ApiOperation(value = "${table.comment!}-添加", notes = "${table.comment!}-添加")
+    </#if>
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody ${entity} ${table.entityPath}){
         if(${table.entityPath}Service.save(${table.entityPath})){
@@ -96,11 +113,14 @@ public class ${table.controllerName} {
     }
 
     /**
-     *  编辑
+     * 编辑
      *
      * @param ${table.entityPath} 需要编辑的对象信息
      * @return 返回编辑结果
      */
+    <#if swagger2>
+    @ApiOperation(value = "${table.comment!}-编辑", notes = "${table.comment!}-编辑")
+    </#if>
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody ${entity} ${table.entityPath}) {
         if(${table.entityPath}Service.updateById(${table.entityPath})){
@@ -110,11 +130,14 @@ public class ${table.controllerName} {
     }
 
     /**
-     *   通过id删除
+     * 通过id删除
      *
      * @param id 需要删除的id
      * @return 返回删除结果
      */
+    <#if swagger2>
+    @ApiOperation(value = "${table.comment!}-通过id删除", notes = "${table.comment!}-通过id删除")
+    </#if>
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name="id",required=true) String id) {
         if(${table.entityPath}Service.removeById(id)){
@@ -124,11 +147,14 @@ public class ${table.controllerName} {
     }
 
     /**
-     *  通过ids批量删除
+     * 通过ids批量删除
      *
      * @param ids 需要批量删除的id，用逗号分割
      * @return 返回删除结果
      */
+    <#if swagger2>
+    @ApiOperation(value = "${table.comment!}-通过ids批量删除", notes = "${table.comment!}-通过ids批量删除")
+    </#if>
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
         if(${table.entityPath}Service.removeByIds(Arrays.asList(ids.split(",")))){
