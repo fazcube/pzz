@@ -58,22 +58,18 @@ public class ShiroConfig {
 
         map.put("/user/login","anon");
         map.put("/user/register","anon");
-        map.put("/springbootshiro/store/testV","anon");
         map.put("/sys/api/**","anon");
 
         map.put("/faz/**","anon");
 
 
+        map.put("/**/*.ico","anon");
         //swagger相关
         map.put("/doc.html","anon");
         //map.put("/swagger-resources", "anon");
         map.put("/swagger**/**","anon");
         map.put("/webjars/**","anon");
         map.put("/v2/**","anon");
-
-
-        //map.put("/springbootshiro/**","anon");
-
 
         //创建 加载自定义的 jwtFilter 并取名为 jwt
         Map<String, Filter> filterMap = new HashMap<String,Filter>(1);

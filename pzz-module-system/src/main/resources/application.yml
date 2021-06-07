@@ -1,10 +1,10 @@
 server:
   port: 8888
   servlet:
-    context-path: /shiro
+    context-path: /pzz
 spring:
   application:
-    name: shiro
+    name: pzz
   mvc:
     static-path-pattern: /**
     view:

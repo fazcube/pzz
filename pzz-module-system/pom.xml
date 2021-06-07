@@ -20,6 +20,11 @@
             <groupId>org.pzz</groupId>
             <artifactId>pzz-base-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.pzz</groupId>
+            <artifactId>pzz-module-mall</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

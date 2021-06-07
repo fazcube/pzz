@@ -5,6 +5,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.net.InetAddress;
@@ -12,7 +13,7 @@ import java.net.UnknownHostException;
 
 @Slf4j
 @SpringBootApplication(scanBasePackages = {"org.pzz"})
-@MapperScan(basePackages = {"org.pzz.modules.mapper"})
+@MapperScan(basePackages = {"org.pzz.modules.mapper","org.pzz.modules.mall.mapper"})
 public class PzzSystemApplication {
     public static void main(String[] args) throws UnknownHostException {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(PzzSystemApplication.class, args);
